@@ -7,7 +7,7 @@ import (
 	"github.com/go-pg/pg"
 )
 
-var DB *pg.DB
+var db *pg.DB
 
 // Movie all values
 type Movie struct {
@@ -68,18 +68,15 @@ type search struct {
 }
 
 // initDB initialize database
-func initDB(host string, dbname string, user string, password string, logsql bool) {
+func initDB(dbname string, user string, password string, logsql bool) {
 	opt := pg.Options{
 		User:     user,
 		Password: password,
 		Database: dbname,
 	}
-	if host != "" {
-		opt.Addr = host
-	}
-	DB = pg.Connect(&opt)
+	db = pg.Connect(&opt)
 	if logsql {
-		DB.OnQueryProcessed(func(event *pg.QueryProcessedEvent) {
+		db.OnQueryProcessed(func(event *pg.QueryProcessedEvent) {
 			query, err := event.FormattedQuery()
 			if err != nil {
 				panic(err)
@@ -96,11 +93,11 @@ func getMovies(page int64) ([]Movie, int64, error) {
 		searches []search
 	)
 
-	count, err := DB.Model(&Movie{}).Count()
+	count, err := db.Model(&Movie{}).Count()
 	if err != nil {
 		return nil, 0, err
 	}
-	_, err = DB.Query(&searches, `SELECT max(t.id), t.movie_id FROM torrents AS t GROUP BY movie_id ORDER BY max(id) desc LIMIT ? OFFSET ?;`, 100, (page-1)*100)
+	_, err = db.Query(&searches, `SELECT max(t.id), t.movie_id FROM torrents AS t GROUP BY movie_id ORDER BY max(id) desc LIMIT ? OFFSET ?;`, 100, (page-1)*100)
 	if err != nil {
 		log.Println("Query search ", err)
 		return nil, 0, err
@@ -123,14 +120,14 @@ func getMovies(page int64) ([]Movie, int64, error) {
 
 func getMovieByID(id int64) Movie {
 	var movie Movie
-	err := DB.Model(&movie).Where("id = ?", id).Select()
+	err := db.Model(&movie).Where("id = ?", id).Select()
 	errchkmsg("getMovieByID", err)
 	return movie
 }
 
 func getMovieTorrents(id int64) []Torrent {
 	var torrents []Torrent
-	err := DB.Model(&torrents).Where("movie_id = ?", id).OrderExpr("seeders DESC").Select()
+	err := db.Model(&torrents).Where("movie_id = ?", id).OrderExpr("seeders DESC").Select()
 	errchkmsg("getMovieTorrents", err)
 	return torrents
 }

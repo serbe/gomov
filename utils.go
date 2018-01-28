@@ -15,7 +15,6 @@ var (
 // Config all vars
 type Config struct {
 	Base struct {
-		Host     string `json:"host"`
 		User     string `json:"user"`
 		Password string `json:"password"`
 		Dbname   string `json:"dbname"`

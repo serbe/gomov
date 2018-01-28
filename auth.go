@@ -9,9 +9,9 @@ import (
 	"github.com/go-chi/render"
 )
 
-var sKey = []byte("m0Bu355up3RdYP3r53crEt")
+var sKey = []byte("m0Bu355up3RdYP3r53crEt666zzz")
 
-var tokenAuth *jwtauth.JwtAuth
+var tokenAuth *jwtauth.JWTAuth
 
 type loginData struct {
 	Username string `json:"username"`

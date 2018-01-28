@@ -37,16 +37,16 @@ func initServer(host string, useLog bool) {
 
 	// REST API
 	r.Group(func(r chi.Router) {
-		r.Use(jwtauth.Verifier(tokenAuth))
-		r.Use(jwtauth.Authenticator)
+		// r.Use(jwtauth.Verifier(tokenAuth))
+		// r.Use(jwtauth.Authenticator)
 
 		r.Use(render.SetContentType(render.ContentTypeJSON))
 
-		r.Route("/api/v1/movies", func(r chi.Router) {
+		r.Route("/api/movies", func(r chi.Router) {
 			r.Get("/{page}", listMovies)
 		})
 
-		r.Route("/api/v1/movie", func(r chi.Router) {
+		r.Route("/api/movie", func(r chi.Router) {
 			r.Get("/{id}", getMovie)
 		})
 	})

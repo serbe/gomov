@@ -6,7 +6,6 @@ func main() {
 		return
 	}
 	initDB(
-		cfg.Base.Host,
 		cfg.Base.Dbname,
 		cfg.Base.User,
 		cfg.Base.Password,
