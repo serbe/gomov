@@ -8,9 +8,7 @@ import (
 	"strconv"
 )
 
-var (
-	logErrors bool
-)
+var logErrors bool
 
 // Config all vars
 type Config struct {
@@ -28,23 +26,23 @@ type Config struct {
 	} `json:"web"`
 }
 
-func getConfig() (c Config, err error) {
+func getConfig() (Config, error) {
+	var c Config
 	file, err := ioutil.ReadFile("./config.json")
 	if err != nil {
 		errmsg("getConfig ReadFile", err)
-		return
+		return c, err
 	}
 	if err = json.Unmarshal(file, &c); err != nil {
 		errmsg("getConfig Unmarshal", err)
-		return
+		return c, err
 	}
 	logErrors = c.Base.LogErr
 	if c.Base.Dbname == "" {
-		err := errors.New("Error: empty database name in config")
+		err = errors.New("Error: empty database name in config")
 		errmsg("getConfig", err)
-		return c, err
 	}
-	return
+	return c, err
 }
 
 func toInt(num string) int64 {

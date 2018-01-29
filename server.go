@@ -2,7 +2,6 @@ package main
 
 import (
 	"net/http"
-	"path/filepath"
 	"time"
 
 	"github.com/go-chi/chi"
@@ -23,12 +22,6 @@ func initServer(host string, useLog bool) {
 	r.Use(middleware.Recoverer)
 	r.Use(middleware.Timeout(60 * time.Second))
 	r.Use(corsHandler)
-
-	// Frontend
-	r.Get("/", indexHandler)
-	r.Get("/favicon.ico", serveFileHandler)
-	FileServer(r, "/static", http.Dir(filepath.Join("public", "static")))
-	r.NotFound(indexHandler)
 
 	// Auth
 	r.Group(func(r chi.Router) {

@@ -87,7 +87,7 @@ func initDB(dbname string, user string, password string, logsql bool) {
 	}
 }
 
-func getMovies(page int64) ([]Movie, int64, error) {
+func getMovies(page int64) ([]Movie, int64) {
 	var (
 		movies   []Movie
 		searches []search
@@ -95,12 +95,12 @@ func getMovies(page int64) ([]Movie, int64, error) {
 
 	count, err := db.Model(&Movie{}).Count()
 	if err != nil {
-		return nil, 0, err
+		return nil, 0
 	}
 	_, err = db.Query(&searches, `SELECT max(t.id), t.movie_id FROM torrents AS t GROUP BY movie_id ORDER BY max(id) desc LIMIT ? OFFSET ?;`, 100, (page-1)*100)
 	if err != nil {
 		log.Println("Query search ", err)
-		return nil, 0, err
+		return nil, 0
 	}
 	for _, s := range searches {
 		movie := getMovieByID(s.MovieID)
@@ -115,7 +115,7 @@ func getMovies(page int64) ([]Movie, int64, error) {
 			movies = append(movies, movie)
 		}
 	}
-	return movies, int64(count), nil
+	return movies, int64(count)
 }
 
 func getMovieByID(id int64) Movie {
