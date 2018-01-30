@@ -12,13 +12,13 @@ var db *pg.DB
 // Movie all values
 type Movie struct {
 	ID          int64       `sql:"id,pk"        json:"id"`
-	Section     string      `sql:"section"      json:"section"`
+	Section     string      `sql:"section"      json:"-"`
 	Name        string      `sql:"name"         json:"name"`
 	EngName     string      `sql:"eng_name"     json:"eng_name"`
 	Year        int         `sql:"year"         json:"year"`
 	Genre       []string    `sql:"genre"        json:"genre"        pg:",array"`
 	Country     []string    `sql:"country"      json:"country"      pg:",array"`
-	RawCountry  string      `sql:"raw_country"  json:"raw_country"`
+	RawCountry  string      `sql:"raw_country"  json:"-"`
 	Director    []string    `sql:"director"     json:"director"     pg:",array"`
 	Producer    []string    `sql:"producer"     json:"producer"     pg:",array"`
 	Actor       []string    `sql:"actor"        json:"actor"        pg:",array"`
@@ -33,8 +33,8 @@ type Movie struct {
 	PosterURL   string      `sql:"poster_url"   json:"poster_url"`
 	NNM         float64     `sql:"-"            json:"nnm"`
 	Torrent     []Torrent   `sql:"-"            json:"torrent"`
-	CreatedAt   pg.NullTime `sql:"created_at"`
-	UpdatedAt   pg.NullTime `sql:"updated_at"`
+	CreatedAt   pg.NullTime `sql:"created_at"   json:"-"`
+	UpdatedAt   pg.NullTime `sql:"updated_at"   json:"-"`
 }
 
 // Torrent all values
@@ -43,12 +43,12 @@ type Torrent struct {
 	MovieID       int64       `sql:"movie_id"       json:"movie_id"`
 	DateCreate    string      `sql:"date_create"    json:"date_create"`
 	Href          string      `sql:"href"           json:"href"`
-	Torrent       string      `sql:"torrent"        json:"torrent"`
+	Torrent       string      `sql:"torrent"        json:"-"`
 	Magnet        string      `sql:"magnet"         json:"magnet"`
 	NNM           float64     `sql:"nnm"            json:"nnm"`
-	SubtitlesType string      `sql:"subtitles_type" json:"subtitles_type"`
+	SubtitlesType string      `sql:"subtitles_type" json:"-"`
 	Subtitles     string      `sql:"subtitles"      json:"subtitles"`
-	Video         string      `sql:"video"          json:"video"`
+	Video         string      `sql:"video"          json:"-"`
 	Quality       string      `sql:"quality"        json:"quality"`
 	Resolution    string      `sql:"resolution"     json:"resolution"`
 	Audio1        string      `sql:"audio1"         json:"audio1"`
@@ -56,10 +56,10 @@ type Torrent struct {
 	Audio3        string      `sql:"audio3"         json:"audio3"`
 	Translation   string      `sql:"translation"    json:"translation"`
 	Size          int         `sql:"size"           json:"size"`
-	Seeders       int         `sql:"seeders"        json:"seeders"`
-	Leechers      int         `sql:"leechers"       json:"leechers"`
-	CreatedAt     pg.NullTime `sql:"created_at"`
-	UpdatedAt     pg.NullTime `sql:"updated_at"`
+	Seeders       int         `sql:"seeders"        json:"-"`
+	Leechers      int         `sql:"leechers"       json:"-"`
+	CreatedAt     pg.NullTime `sql:"created_at"     json:"-"`
+	UpdatedAt     pg.NullTime `sql:"updated_at"     json:"-"`
 }
 
 type search struct {
@@ -97,7 +97,7 @@ func getMovies(page int64) ([]Movie, int64) {
 	if err != nil {
 		return nil, 0
 	}
-	_, err = db.Query(&searches, `SELECT max(t.id), t.movie_id FROM torrents AS t GROUP BY movie_id ORDER BY max(id) desc LIMIT ? OFFSET ?;`, 100, (page-1)*100)
+	_, err = db.Query(&searches, `SELECT max(t.id), t.movie_id FROM torrents AS t GROUP BY movie_id ORDER BY max(id) desc LIMIT ? OFFSET ?;`, 20, (page-1)*20)
 	if err != nil {
 		log.Println("Query search ", err)
 		return nil, 0
